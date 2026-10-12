@@ -9,7 +9,7 @@ __pycache__/
 .venv/
 venv/
 
-# Jupyter Notebook
+# Jupyter
 .ipynb_checkpoints/
 
 # Node.js
@@ -17,9 +17,7 @@ node_modules/
 dist/
 build/
 
-# IDE
+# IDE and OS
 .vscode/
-
-# OS files
 .DS_Store
 Thumbs.db

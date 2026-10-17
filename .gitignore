@@ -21,3 +21,9 @@ build/
 .vscode/
 .DS_Store
 Thumbs.db
+
+# Data and trained models
+data/
+*.pkl
+*.joblib
+*.h5

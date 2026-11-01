@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.routes.movie import router as movie_router
+from app.routes.reviews import router as reviews_router
 
 app = FastAPI(title="CineSense API")
 
@@ -12,6 +13,7 @@ app.add_middleware(
 )
 
 app.include_router(movie_router)
+app.include_router(reviews_router)
 
 
 @app.get("/")

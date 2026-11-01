@@ -34,3 +34,21 @@ def fetch_movie(title: str):
             "metacritic": ratings.get("Metacritic"),
         },
     }
+    if data.get("Response") == "False":
+        # fallback: fuzzy search, then fetch the first match by IMDb ID
+        search = requests.get(
+            OMDB_URL,
+            params={"apikey": api_key, "s": title},
+            timeout=10,
+        ).json()
+        hits = search.get("Search") or []
+        if not hits:
+            return None
+        resp = requests.get(
+            OMDB_URL,
+            params={"apikey": api_key, "i": hits[0]["imdbID"]},
+            timeout=10,
+        )
+        data = resp.json()
+        if data.get("Response") == "False":
+            return None

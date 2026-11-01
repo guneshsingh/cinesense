@@ -6,6 +6,7 @@ const API = "http://127.0.0.1:8000";
 export default function App() {
   const [title, setTitle] = useState("");
   const [movie, setMovie] = useState(null);
+  const [reviews, setReviews] = useState(null);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -15,11 +16,18 @@ export default function App() {
     setLoading(true);
     setError("");
     setMovie(null);
+    setReviews(null);
     try {
       const res = await fetch(`${API}/movie?title=${encodeURIComponent(title)}`);
       if (res.status === 404) throw new Error("Movie not found");
       if (!res.ok) throw new Error("Something went wrong on the server");
-      setMovie(await res.json());
+      const m = await res.json();
+      setMovie(m);
+
+      const r = await fetch(
+        `${API}/reviews?title=${encodeURIComponent(m.title)}&year=${encodeURIComponent(m.year)}`
+      );
+      if (r.ok) setReviews(await r.json());
     } catch (err) {
       setError(err.message);
     } finally {
@@ -57,8 +65,29 @@ export default function App() {
               <li>IMDb: {movie.ratings.imdb ?? "N/A"}</li>
               <li>Rotten Tomatoes: {movie.ratings.rotten_tomatoes ?? "N/A"}</li>
               <li>Metacritic: {movie.ratings.metacritic ?? "N/A"}</li>
+              {reviews && <li>TMDB: {reviews.tmdb_rating}/10</li>}
             </ul>
           </div>
+        </div>
+      )}
+
+      {reviews && (
+        <div className="reviews">
+          <h3>Audience reviews ({reviews.reviews.length})</h3>
+          {reviews.reviews.length === 0 && (
+            <p className="muted">No reviews found on TMDB for this movie.</p>
+          )}
+          {reviews.reviews.slice(0, 5).map((rv, i) => (
+            <div className="review" key={i}>
+              <strong>{rv.author}</strong>
+              {rv.rating && <span> · {rv.rating}/10</span>}
+              <p>
+                {rv.content.length > 400
+                  ? rv.content.slice(0, 400) + "..."
+                  : rv.content}
+              </p>
+            </div>
+          ))}
         </div>
       )}
     </div>
